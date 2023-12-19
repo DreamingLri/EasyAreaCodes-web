@@ -1,4 +1,4 @@
-# easyaraecode
+# EasyAreaCodes-web
 
 ## Project setup
 ```
