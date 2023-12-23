@@ -67,9 +67,18 @@ const currentTag = ref('')
 function highLight(data){
   currentTag.value = data
 }
+const detail = ref({})
 
 function getDetails(item){
   console.log(item)
+  request.get("detail/getDetailByCodeAndNewCodeAndTime?code="+item.code+"&newCode="+item.newCode+"&time="+item.time).then(res=>{
+    if(res.code === 200){
+      detail.value = res.data
+      // console.log(detail.value[0].text)
+    } else {
+      ElMessage.error(res.message)
+    }
+  })
 }
 
 
@@ -161,7 +170,7 @@ const data = reactive([])
                     </div>
                   </template>
                   <div>
-
+                    {{detail.text}}
                   </div>
                 </el-card>
               </el-col>
