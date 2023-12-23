@@ -1,9 +1,11 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="wrapper">
+    <div class="main-wrapper">
+      <Main/>
+      <router-view/>
+    </div>
+  </div>
+
 </template>
 
 <style>
@@ -15,16 +17,8 @@
   color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
+<script setup>
+import Title from "@/components/Title.vue";
+import Main from "@/components/Main.vue";
+</script>
