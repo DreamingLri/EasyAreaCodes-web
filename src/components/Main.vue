@@ -10,6 +10,9 @@ const handleNodeClick = (data) => {
 
 const filterText = ref('')
 const treeRef = ref();
+const currentNode = ref()
+const successors = ref([])
+const predecessors = ref([])
 
 
 const filterNode = (value, data) => {
@@ -23,18 +26,27 @@ watch(filterText, (val) => {
 
 function showDetails(node, data){
   console.log(data)
+  currentNode.value = data
+  request.get("code/getSuccessors?code="+data.code+"&start="+data.start).then(res=>{
+    if(res.code === 200){
+      successors.value = res.data
+    } else {
+      console.log(res.message)
+    }
+  })
+  request.get("code/getPredecessors?code="+data.code+"&start="+data.start+"&end="+(data.end ? data.end : "") ).then(res=>{
+    if(res.code === 200){
+      predecessors.value = res.data
+    } else {
+      console.log(res.message)
+    }
+  })
 }
+
+
 
 const defaultProps = {
   children: 'children',
-  label: function(data, node) {
-    if(!node.data.end){
-      return node.data.code + " <" + node.data.start + "> " + node.data.name
-    } else {
-      return node.data.code + " <" +node.data.start + "-" + node.data.end + "> " + node.data.name
-    }
-
-  }
 }
 onMounted(()=>{
   getCodes()
@@ -50,6 +62,17 @@ function getCodes(){
     }
   })
 }
+
+const currentTag = ref('')
+function highLight(data){
+  currentTag.value = data
+}
+
+function getDetails(item){
+  console.log(item)
+}
+
+
 const data = reactive([])
 
 </script>
@@ -76,6 +99,9 @@ const data = reactive([])
                          :props="defaultProps"
                          @node-click="handleNodeClick"
                          :filter-node-method="filterNode"
+                         :expand-on-click-node="false"
+                         :accordion="true"
+                         :auto-expand-parent="false"
                          ref="treeRef"
                 >
                   <template #default="{ node, data }">
@@ -92,7 +118,56 @@ const data = reactive([])
           </div>
         </el-aside>
         <el-main>
-          hello
+          <el-scrollbar class="el-scrollbar">
+            <el-row v-if="currentNode" >
+              <el-col :span="24">
+                <el-card shadow="always" class="el-card">
+                  <template #header>
+                  <div class="card-header">
+                    <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><Location /></el-icon>本身</el-text></span>
+                    <el-tag @click="highLight(currentNode)" :effect="currentNode === currentTag? 'dark':'light'" style="font-size: 15px; margin-left: 20px">
+                      {{currentNode.code}} &lt;{{currentNode.start}}{{currentNode.end ? "-" + currentNode.end : ""}}&gt; {{currentNode.name}}
+                    </el-tag>
+                  </div>
+                </template>
+                  <el-row v-if="currentNode" :gutter="40">
+                    <el-col :span="12" >
+                      <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><DArrowLeft /></el-icon>前驱</el-text></span>
+                      <div v-for="item in predecessors" :key="item" @click="getDetails(item)">
+                        <el-tag @click="highLight(item)" :effect="item === currentTag ? 'dark':'light'" class="ml-2" type="info" style="margin-top: 10px; font-size: 15px">
+                          {{item.code}} &lt;{{item.time}}&gt; {{item.name}}
+                        </el-tag>
+                      </div>
+                    </el-col>
+                    <el-col :span="12">
+                      <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><DArrowRight /></el-icon>后继</el-text></span>
+                      <div v-for="item in successors" :key="item" @click="getDetails(item)">
+                        <el-tag @click="highLight(item)" :effect="item === currentTag ? 'dark':'light'" class="ml-2" type="success" style="margin-top: 10px; font-size: 15px">
+                          {{item.newCode}} &lt;{{item.time}}&gt; {{item.name}}
+                        </el-tag>
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-card>
+              </el-col>
+            </el-row>
+
+            <el-row v-if="currentNode" style="margin-top: 30px">
+              <el-col :span="24">
+                <el-card class="el-card">
+                  <template #header>
+                    <div class="card-header">
+                      <span>详情</span>
+                    </div>
+                  </template>
+                  <div>
+
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+          </el-scrollbar>
+
         </el-main>
       </el-container>
     </el-container>
@@ -123,6 +198,8 @@ const data = reactive([])
 .el-scrollbar{
   width: 100%;
   height: calc(100vh - 150px);
+  box-sizing: border-box;
+  padding: 20px;
 }
 .el-scrollbar :deep(.el-menu){
   border-right: 0;
@@ -133,5 +210,13 @@ const data = reactive([])
 }
 .el-tree{
   color: black;
+}
+
+.card-header{
+  text-align: left;
+}
+
+.el-card{
+  border-radius: 10px;
 }
 </style>
