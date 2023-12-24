@@ -15,6 +15,11 @@ const routes = [
         path: 'login',
         name: 'login',
         component: ()=>import('@/components/Login.vue')
+      },
+      {
+        path: 'back-stage',
+        name: 'back-stage',
+        component: ()=>import('@/components/BackStage.vue')
       }
     ]
   }
