@@ -34,6 +34,11 @@ const toggleSelection = (rows) => {
 const handleSelectionChange = (val) => {
   multipleSelection.value = val
 }
+
+const editList = ref([])
+function jumpToEdit(){
+  editList.value = multipleSelection.value
+}
 </script>
 
 <template>
@@ -56,7 +61,8 @@ const handleSelectionChange = (val) => {
                         <el-table-column label="NewCode" prop="newCode" />
                     </el-table>
                     <div style="margin-top: 10px">
-                      <el-button @click="toggleSelection()" type="primary">Clear selection</el-button>
+                      <el-button @click="toggleSelection()" plain>Clear selection</el-button>
+                      <el-button @click="jumpToEdit()" type="primary" plain>Jump to Edit</el-button>
                     </div>
                   </div>
                 </template>
@@ -67,7 +73,18 @@ const handleSelectionChange = (val) => {
       </el-aside>
       <el-main class="main">
         <el-card shadow="hover">
-          主界面
+          <el-table :data="editList" style="width: 100%">
+            <el-table-column label="Code" prop="code"/>
+            <el-table-column label="Start" prop="start"/>
+            <el-table-column label="Time" prop="time"/>
+            <el-table-column label="NewCode" prop="newCode"/>
+            <el-table-column label="Operations">
+              <template #default="scope">
+                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-card>
       </el-main>
     </el-container>
