@@ -66,7 +66,7 @@ function handleEdit(row){
     data = row
     request.post("/detail/getDetailByChange" , data).then(res=>{
       if(res.code === 200){
-        console.log(res.data)
+        // console.log(res.data)
         detail.value = res.data
         detailsList.value = []
       } else {
@@ -78,14 +78,12 @@ function handleEdit(row){
     data = multipleSelectedSelection.value
     request.post("/detail/getDetailByChangesList" , data).then(res=>{
       if(res.code === 200){
-        console.log(res.data)
         detailsList.value = res.data
         detail.value = undefined;
       } else {
         console.log(res.message)
       }
     })
-    console.log(data)
   }
 }
 
@@ -98,7 +96,6 @@ function updateDetail(){
   request.post("detail/updateDetail", detail.value).then(res=>{
     if(res.code === 200){
       ElMessage.success("更新成功")
-      // update()
     } else {
       ElMessage.error(res.message)
     }
@@ -106,11 +103,13 @@ function updateDetail(){
 }
 
 function updateDetails(){
-  detailsList[0].text = textarea.value
-  request.post("detail/updateDetails" ,detailsList).then(res=>{
+  console.log(detailsList)
+  for (let i = 0; i < detailsList.value.length; i++) {
+    detailsList.value[i].text = textarea.value
+  }
+  request.post("detail/updateDetails" ,detailsList.value).then(res=>{
     if(res.code === 200){
       ElMessage.success("更新成功")
-      // update()
     } else {
       ElMessage.error(res.message)
     }
@@ -123,7 +122,10 @@ function updateDetails(){
 <div class="main-wrapper">
   <el-container>
     <el-header class="header">
-      EAC后台管理系统
+      <h3>
+        EAC后台管理系统
+      </h3>
+
     </el-header>
     <el-container>
       <el-aside width="40%" class="aside">
@@ -164,7 +166,7 @@ function updateDetails(){
       </el-aside>
       <el-main class="main">
         <el-card shadow="hover">
-          <el-table :data="editList" style="width: 100%" @selection-change="handleSelectedSelectionChange" ref="multipleSelectedTableRef">
+          <el-table :data="editList" style="width: 100%" height="300" @selection-change="handleSelectedSelectionChange" ref="multipleSelectedTableRef">
             <el-table-column type="selection" width="55" />
             <el-table-column label="旧代码">
               <template #default="scope">
@@ -193,7 +195,7 @@ function updateDetails(){
             <el-button @click="handleEdit()" type="primary" :disabled="multipleSelectedSelection.length === 0" plain>多选编辑</el-button>
           </div>
         </el-card>
-        <div v-if="detailsList.length > 1">
+        <div v-if="detailsList.length">
           <el-card shadow="hover" style="margin-top: 10px">
             <div v-for="item in detailsList" style="margin-top: 10px">
 
@@ -209,7 +211,7 @@ function updateDetails(){
                   v-model="item.text"
                   :autosize="{ minRows: 4}"
                   type="textarea"
-                  placeholder="Please input"
+                  placeholder="无数据"
                   disabled
               />
             </div>
@@ -219,12 +221,12 @@ function updateDetails(){
                 v-model="textarea"
                 :autosize="{ minRows: 4}"
                 type="textarea"
-                placeholder="Please input"
+                placeholder="请输入要变更的详情"
             />
             <el-button @click="updateDetails" plain style="margin-top: 10px; display: flex">Update</el-button>
           </el-card>
         </div>
-        <div v-else>
+        <div v-else-if="detail">
           <el-card shadow="hover" style="margin-top: 10px" v-if="detail">
 
             <div v-if="detail" style="display: flex; justify-content: center; margin-bottom: 5px">
@@ -239,7 +241,7 @@ function updateDetails(){
                 v-model="detail.text"
                 :autosize="{ minRows: 4}"
                 type="textarea"
-                placeholder="Please input"
+                placeholder="无数据"
                 disabled
             />
           </el-card>
@@ -248,10 +250,10 @@ function updateDetails(){
                 v-model="textarea"
                 :autosize="{ minRows: 4}"
                 type="textarea"
-                placeholder="Please input"
+                placeholder="请输入要变更的详情"
             />
           </el-card>
-          <el-button :disabled="!detail" @click="updateDetail" plain style="margin-top: 10px; display: flex">Update</el-button>
+          <el-button :disabled="!textarea" @click="updateDetail" plain style="margin-top: 10px; display: flex">Update</el-button>
         </div>
       </el-main>
     </el-container>
