@@ -56,7 +56,7 @@ onMounted(()=>{
 function getCodes(){
   request.get("code/getAllCodes").then(res=>{
     if(res.code === 200){
-      data.value = res.data
+        data.value = res.data
     } else {
       ElMessage.error(res.message)
     }
@@ -67,13 +67,20 @@ const currentTag = ref('')
 function highLight(data){
   currentTag.value = data
 }
-const detail = ref({})
+const detail = ref({
+  id: '',
+  text: '暂无数据详情'
+})
 
 function getDetails(item){
   console.log(item)
   request.get("detail/getDetailByCodeAndNewCodeAndTime?code="+item.code+"&newCode="+item.newCode+"&time="+item.time).then(res=>{
     if(res.code === 200){
-      detail.value = res.data
+      if(res.data){
+        detail.value = res.data
+      }else {
+        detail.value.text = '暂无数据详情'
+      }
       // console.log(detail.value[0].text)
     } else {
       ElMessage.error(res.message)

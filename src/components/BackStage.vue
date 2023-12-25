@@ -160,7 +160,11 @@ function updateDetails(){
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="时间" prop="time" />
+              <el-table-column label="时间">
+                <template v-slot="scope">
+                  {{scope.row.time-1}} - {{scope.row.time}}
+                </template>
+              </el-table-column>
             </el-table>
           </el-scrollbar>
       </el-aside>
