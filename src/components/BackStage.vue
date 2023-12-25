@@ -19,6 +19,7 @@ onMounted(()=>{
   getChangeList()
 })
 
+//多选面板
 const multipleTableRef = ref()
 const multipleSelection = ref([])
 const toggleSelection = (rows) => {
@@ -39,6 +40,83 @@ const editList = ref([])
 function jumpToEdit(){
   editList.value = multipleSelection.value
 }
+
+const multipleSelectedTableRef = ref()
+const multipleSelectedSelection = ref([])
+const toggleSelectedSelection = (rows) => {
+  console.log(multipleSelectedSelection.value)
+  if (rows) {
+    rows.forEach((row) => {
+      multipleSelectedTableRef.value.toggleRowSelection(row)
+    })
+  } else {
+    multipleSelectedTableRef.value.clearSelection()
+  }
+}
+const handleSelectedSelectionChange = (val) => {
+  multipleSelectedSelection.value = val
+}
+
+//编辑面板
+const detailsList = ref([])
+const detail = ref()
+function handleEdit(row){
+  let data
+  if(row){
+    data = row
+    request.post("/detail/getDetailByChange" , data).then(res=>{
+      if(res.code === 200){
+        console.log(res.data)
+        detail.value = res.data
+        detailsList.value = []
+      } else {
+        console.log(res.message)
+      }
+    })
+    console.log(data)
+  } else {
+    data = multipleSelectedSelection.value
+    request.post("/detail/getDetailByChangesList" , data).then(res=>{
+      if(res.code === 200){
+        console.log(res.data)
+        detailsList.value = res.data
+        detail.value = undefined;
+      } else {
+        console.log(res.message)
+      }
+    })
+    console.log(data)
+  }
+}
+
+//更新Detail
+
+const textarea = ref('')
+function updateDetail(){
+  detail.value.text = textarea.value
+  console.log(detail)
+  request.post("detail/updateDetail", detail.value).then(res=>{
+    if(res.code === 200){
+      ElMessage.success("更新成功")
+      // update()
+    } else {
+      ElMessage.error(res.message)
+    }
+  })
+}
+
+function updateDetails(){
+  detailsList[0].text = textarea.value
+  request.post("detail/updateDetails" ,detailsList).then(res=>{
+    if(res.code === 200){
+      ElMessage.success("更新成功")
+      // update()
+    } else {
+      ElMessage.error(res.message)
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -56,36 +134,125 @@ function jumpToEdit(){
                   <div>
                     <el-table :data="props.row.family" @selection-change="handleSelectionChange" ref="multipleTableRef">
                         <el-table-column type="selection" width="55" />
-                        <el-table-column label="Code" prop="code" />
-                        <el-table-column label="Start" prop="start" />
-                        <el-table-column label="NewCode" prop="newCode" />
+                        <el-table-column label="旧代码">
+                          <template #default="scope">
+                            <div style="display: flex; align-items: center">
+                              <el-tag :disable-transitions="true">{{ scope.row.code }}</el-tag>
+                              <span style="margin-left: 10px">{{ scope.row.name }}</span>
+                            </div>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="新代码">
+                          <template #default="scope">
+                            <div style="display: flex; align-items: center">
+                              <el-tag :disable-transitions="true">{{ scope.row.newCode }}</el-tag>
+                              <span style="margin-left: 10px">{{ scope.row.newName }}</span>
+                            </div>
+                          </template>
+                        </el-table-column>
                     </el-table>
                     <div style="margin-top: 10px">
-                      <el-button @click="toggleSelection()" plain>Clear selection</el-button>
-                      <el-button @click="jumpToEdit()" type="primary" plain>Jump to Edit</el-button>
+                      <el-button @click="toggleSelection()" plain>清空选择</el-button>
+                      <el-button @click="jumpToEdit()" type="primary" plain>跳转编辑</el-button>
                     </div>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Time" prop="time" />
+              <el-table-column label="时间" prop="time" />
             </el-table>
           </el-scrollbar>
       </el-aside>
       <el-main class="main">
         <el-card shadow="hover">
-          <el-table :data="editList" style="width: 100%">
-            <el-table-column label="Code" prop="code"/>
-            <el-table-column label="Start" prop="start"/>
-            <el-table-column label="Time" prop="time"/>
-            <el-table-column label="NewCode" prop="newCode"/>
-            <el-table-column label="Operations">
+          <el-table :data="editList" style="width: 100%" @selection-change="handleSelectedSelectionChange" ref="multipleSelectedTableRef">
+            <el-table-column type="selection" width="55" />
+            <el-table-column label="旧代码">
               <template #default="scope">
-                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+                <div style="display: flex; align-items: center">
+                  <el-tag :disable-transitions="true">{{ scope.row.code }}</el-tag>
+                  <span style="margin-left: 10px">{{ scope.row.name }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="新代码">
+              <template #default="scope">
+                <div style="display: flex; align-items: center">
+                  <el-tag :disable-transitions="true">{{ scope.row.newCode }}</el-tag>
+                  <span style="margin-left: 10px">{{ scope.row.newName }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button size="small" @click="handleEdit(scope.row)">Edit</el-button>
               </template>
             </el-table-column>
           </el-table>
+          <div style="margin-top: 10px; display: flex;">
+            <el-button @click="toggleSelectedSelection()" plain :disabled="multipleSelectedSelection.length === 0">清空选择</el-button>
+            <el-button @click="handleEdit()" type="primary" :disabled="multipleSelectedSelection.length === 0" plain>多选编辑</el-button>
+          </div>
         </el-card>
+        <div v-if="detailsList.length > 1">
+          <el-card shadow="hover" style="margin-top: 10px">
+            <div v-for="item in detailsList" style="margin-top: 10px">
+
+              <div style="display: flex; justify-content: center; margin-bottom: 5px">
+                <el-tag>{{item.code}}</el-tag>
+                <span style="margin-left: 5px">{{item.name}}</span>
+                <el-icon style="margin-left: 10px; margin-right: 10px; margin-top: 3px"><DArrowRight /></el-icon>
+                <el-tag>{{item.newCode}}</el-tag>
+                 <span style="margin-left: 5px">{{item.newName}}</span>
+              </div>
+
+              <el-input
+                  v-model="item.text"
+                  :autosize="{ minRows: 4}"
+                  type="textarea"
+                  placeholder="Please input"
+                  disabled
+              />
+            </div>
+          </el-card>
+          <el-card shadow="hover" style="margin-top: 10px">
+            <el-input
+                v-model="textarea"
+                :autosize="{ minRows: 4}"
+                type="textarea"
+                placeholder="Please input"
+            />
+            <el-button @click="updateDetails" plain style="margin-top: 10px; display: flex">Update</el-button>
+          </el-card>
+        </div>
+        <div v-else>
+          <el-card shadow="hover" style="margin-top: 10px" v-if="detail">
+
+            <div v-if="detail" style="display: flex; justify-content: center; margin-bottom: 5px">
+              <el-tag>{{detail.code}}</el-tag>
+              <span style="margin-left: 5px">{{detail.name}}</span>
+              <el-icon style="margin-left: 10px; margin-right: 10px; margin-top: 3px"><DArrowRight /></el-icon>
+              <el-tag>{{detail.newCode}}</el-tag>
+              <span style="margin-left: 5px">{{detail.newName}}</span>
+            </div>
+
+            <el-input
+                v-model="detail.text"
+                :autosize="{ minRows: 4}"
+                type="textarea"
+                placeholder="Please input"
+                disabled
+            />
+          </el-card>
+          <el-card shadow="hover" style="margin-top: 10px">
+            <el-input
+                v-model="textarea"
+                :autosize="{ minRows: 4}"
+                type="textarea"
+                placeholder="Please input"
+            />
+          </el-card>
+          <el-button :disabled="!detail" @click="updateDetail" plain style="margin-top: 10px; display: flex">Update</el-button>
+        </div>
       </el-main>
     </el-container>
   </el-container>
