@@ -134,9 +134,9 @@ const data = reactive([])
                   <template #header>
                   <div class="card-header">
                     <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><Location /></el-icon>本身</el-text></span>
-                    <el-tag @click="highLight(currentNode)" :effect="currentNode === currentTag? 'dark':'light'" style="font-size: 15px; margin-left: 20px">
-                      {{currentNode.code}} &lt;{{currentNode.start}}{{currentNode.end ? "-" + currentNode.end : ""}}&gt; {{currentNode.name}}
-                    </el-tag>
+                      <el-tag effect="light" style="font-size: 15px; margin-left: 20px">
+                        {{currentNode.code}} &lt;{{currentNode.start}}{{currentNode.end ? "-" + currentNode.end : ""}}&gt; {{currentNode.name}}
+                      </el-tag>
                   </div>
                 </template>
                   <el-row v-if="currentNode" :gutter="40">
