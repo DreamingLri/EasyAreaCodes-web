@@ -134,10 +134,10 @@ const data = reactive([])
           </div>
         </el-aside>
         <el-main>
-          <el-scrollbar class="el-scrollbar">
+          <el-scrollbar class="el-main-scrollbar">
             <el-row v-if="currentNode" >
               <el-col :span="24">
-                <el-card shadow="always" class="el-card">
+                <el-card shadow="hover" class="el-card">
                   <template #header>
                   <div class="card-header">
                     <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><Location /></el-icon>本身</el-text></span>
@@ -170,13 +170,13 @@ const data = reactive([])
 
             <el-row v-if="currentNode" style="margin-top: 30px">
               <el-col :span="24">
-                <el-card class="el-card">
+                <el-card class="el-card" shadow="hover">
                   <template #header>
                     <div class="card-header">
-                      <span>详情</span>
+                      <span><el-text style="font-size: 20px" size="large" type="primary"><el-icon style="margin-right: 5px"><DataAnalysis /></el-icon>详情</el-text></span>
                     </div>
                   </template>
-                  <div>
+                  <div style="text-align: left">
                     {{detail.text}}
                   </div>
                 </el-card>
@@ -213,9 +213,13 @@ const data = reactive([])
 }
 .el-scrollbar{
   width: 100%;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 170px);
   box-sizing: border-box;
   padding: 20px;
+}
+.el-main-scrollbar{
+  width: 100%;
+  height: calc(100vh - 195px);
 }
 .el-scrollbar :deep(.el-menu){
   border-right: 0;
@@ -233,6 +237,5 @@ const data = reactive([])
 }
 
 .el-card{
-  border-radius: 10px;
 }
 </style>

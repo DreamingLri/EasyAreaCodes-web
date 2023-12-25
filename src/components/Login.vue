@@ -29,8 +29,8 @@ function login(){
           <span>EAC后台管理</span>
         </div>
       </template>
-      <el-input v-model="loginUser.userName" placeholder="Please input" />
-      <el-input v-model="loginUser.password" style="margin-top: 10px" type="password" placeholder="Please input password" show-password/>
+      <el-input v-model="loginUser.userName" placeholder="请输入账号名" />
+      <el-input v-model="loginUser.password" style="margin-top: 10px" type="password" placeholder="请输入密码" show-password/>
       <template #footer>
         <el-button type="primary" @click="login" style="width: 100%">Login</el-button>
       </template>

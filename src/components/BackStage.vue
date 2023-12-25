@@ -190,7 +190,7 @@ function updateDetails(){
             </el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button size="small" @click="handleEdit(scope.row)">Edit</el-button>
+                <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -257,7 +257,7 @@ function updateDetails(){
                 placeholder="请输入要变更的详情"
             />
           </el-card>
-          <el-button :disabled="!textarea" @click="updateDetail" plain style="margin-top: 10px; display: flex">Update</el-button>
+          <el-button :disabled="!textarea" @click="updateDetail" plain style="margin-top: 10px; display: flex">更新</el-button>
         </div>
       </el-main>
     </el-container>
