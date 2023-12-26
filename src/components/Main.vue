@@ -25,22 +25,24 @@ watch(filterText, (val) => {
 })
 
 function showDetails(node, data){
-  console.log(data)
+  // console.log(data)
   currentNode.value = data
   request.get("code/getSuccessors?code="+data.code+"&start="+data.start).then(res=>{
     if(res.code === 200){
       successors.value = res.data
     } else {
-      console.log(res.message)
+      ElMessage.error(res.message)
     }
   })
   request.get("code/getPredecessors?code="+data.code+"&start="+data.start+"&end="+(data.end ? data.end : "") ).then(res=>{
     if(res.code === 200){
       predecessors.value = res.data
     } else {
-      console.log(res.message)
+      ElMessage.error(res.message)
     }
   })
+
+  detail.value.text = '暂无数据详情'
 }
 
 
@@ -50,7 +52,6 @@ const defaultProps = {
 }
 onMounted(()=>{
   getCodes()
-  console.log(data)
 })
 
 function getCodes(){
@@ -73,7 +74,7 @@ const detail = ref({
 })
 
 function getDetails(item){
-  console.log(item)
+  // console.log(item)
   request.get("detail/getDetailByCodeAndNewCodeAndTime?code="+item.code+"&newCode="+item.newCode+"&time="+item.time).then(res=>{
     if(res.code === 200){
       if(res.data){

@@ -92,7 +92,7 @@ function handleEdit(row){
 const textarea = ref('')
 function updateDetail(){
   detail.value.text = textarea.value
-  console.log(detail)
+  // console.log(detail)
   request.post("detail/updateDetail", detail.value).then(res=>{
     if(res.code === 200){
       ElMessage.success("更新成功")
@@ -103,7 +103,7 @@ function updateDetail(){
 }
 
 function updateDetails(){
-  console.log(detailsList)
+  // console.log(detailsList)
   for (let i = 0; i < detailsList.value.length; i++) {
     detailsList.value[i].text = textarea.value
   }
@@ -227,7 +227,7 @@ function updateDetails(){
                 type="textarea"
                 placeholder="请输入要变更的详情"
             />
-            <el-button @click="updateDetails" plain style="margin-top: 10px; display: flex">Update</el-button>
+            <el-button @click="updateDetails" plain style="margin-top: 10px; display: flex">更新</el-button>
           </el-card>
         </div>
         <div v-else-if="detail">
