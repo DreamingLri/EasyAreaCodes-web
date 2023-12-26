@@ -22,6 +22,12 @@ const routes = [
         component: ()=>import('@/components/BackStage.vue')
       }
     ]
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    title: '404 NotFound',
+    component: ()=> import('@/views/404.vue')
   }
 ]
 
